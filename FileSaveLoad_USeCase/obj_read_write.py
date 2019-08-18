@@ -23,7 +23,7 @@ class ObjReadWrite:
             return False
 
         try:
-            fp = open(self.file_name, 'wb')
+            fp = open(file_name, 'wb')
             dill.dump(obj=my_obj, file=fp)
             fp.close()
             return True
@@ -45,7 +45,7 @@ class ObjReadWrite:
         """
 
         try:
-            fp = open(self.file_name, 'rb')
+            fp = open(file_name, 'rb')
             my_obj = dill.load(file=fp)
             fp.close()
             if obj_type != None and type(my_obj) != obj_type:
@@ -70,12 +70,21 @@ def test_ob_read_write():
     crt_file_path = os.path.normpath(os.path.abspath(__file__))
     crt_folder_path = os.path.normpath(os.path.dirname(crt_file_path))
     data_folder_path = os.path.join(crt_folder_path, 'data')
-    if not os.path.isfile(data_folder_path):
+    if not os.path.isdir(data_folder_path):
         os.makedirs(data_folder_path)
-        
-    module_name = os.path.join(data_folder_path, 'test.dill')
-    print(data_folder_path)
-    print(module_name)
+
+    module_file_name = os.path.join(data_folder_path, 'test.dill')
+    
+    test_obj = TestClass(2, 3)
+    test_obj.fun()
+
+    res = ObjReadWrite.svae_obj(my_obj=test_obj, file_name=module_file_name, obj_type=TestClass)
+    assert res == True
+
+    load_obj = ObjReadWrite.load_obj(file_name=module_file_name, obj_type=TestClass)
+    assert load_obj is not None
+    assert load_obj.a == test_obj.a
+    assert load_obj.b == test_obj.b
 
 
 if __name__ == "__main__":
